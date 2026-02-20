@@ -216,7 +216,6 @@ class ChatView:
     def add_message(self, text: str, msg_type: str = "system") -> None:
         """Add message to GUI display"""
         timestamp = time.strftime("%H:%M")
-        self.chat_display.config(state=tk.NORMAL)
 
         if msg_type == "received":
             prefix = f"[{timestamp}] << "
@@ -231,10 +230,9 @@ class ChatView:
             prefix = f"[{timestamp}] :: "
             body_tag = "system"
 
-        self.chat_display.insert(tk.END, prefix, body_tag)
-        self.chat_display.see(tk.END)
-        self.chat_display.config(state=tk.DISABLED)
-        self._typewriter_queue.append((f"{text}\n", body_tag))
+        # Queue the entire line as one typewriter payload to avoid interleaving
+        # prefixes and message bodies when multiple updates arrive quickly.
+        self._typewriter_queue.append((f"{prefix}{text}\n", body_tag))
         if not self._typing_active:
             self._process_typewriter_queue()
 
