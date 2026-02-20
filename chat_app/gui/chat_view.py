@@ -1,8 +1,10 @@
 # chat_app/gui/chat_view.py
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import scrolledtext
 import queue
 import time
+from collections import deque
 
 
 class ChatView:
@@ -15,6 +17,10 @@ class ChatView:
         self._status_anim_state = False
         self._header_pulse_index = 0
         self._header_pulse_colors = ["#0d1f0d", "#113311", "#153f15", "#113311"]
+        self._typewriter_queue = deque()
+        self._typing_active = False
+        self._typing_delay_ms = 16
+        self.primary_font, self.secondary_font = self._select_retro_fonts()
 
         # Fallout/Matrix retro terminal palette
         self.colors = {
@@ -32,7 +38,7 @@ class ChatView:
         }
 
         self.root.configure(bg=self.colors['bg'])
-        self.root.option_add("*Font", "Courier 10")
+        self.root.option_add("*Font", f"{self.secondary_font} 12")
 
         self.create_widgets()
         self.process_queue()
@@ -56,7 +62,7 @@ class ChatView:
             text=title_text,
             bg=self.colors['secondary'],
             fg=self.colors['highlight'],
-            font=('Courier', 14, 'bold')
+            font=(self.primary_font, 18, 'bold')
         )
         self.title_label.pack(side=tk.LEFT, padx=20, pady=10)
 
@@ -65,7 +71,7 @@ class ChatView:
             text="● OFFLINE",
             bg=self.colors['secondary'],
             fg=self.colors['muted'],
-            font=('Courier', 10, 'bold')
+            font=(self.secondary_font, 13, 'bold')
         )
         self.status_label.pack(side=tk.RIGHT, padx=20, pady=10)
 
@@ -75,7 +81,7 @@ class ChatView:
 
         # Host input
         tk.Label(conn_frame, text="HOST>", bg=self.colors['bg'],
-                 fg=self.colors['text'], font=('Courier', 10, 'bold')).pack(side=tk.LEFT, padx=(0, 5))
+                 fg=self.colors['text'], font=(self.secondary_font, 12, 'bold')).pack(side=tk.LEFT, padx=(0, 5))
         self.host_entry = tk.Entry(conn_frame, width=15,
                                    bg=self.colors['secondary'],
                                    fg=self.colors['text'],
@@ -84,13 +90,13 @@ class ChatView:
                                    highlightthickness=1,
                                    highlightbackground=self.colors['accent'],
                                    highlightcolor=self.colors['highlight'],
-                                   font=('Courier', 10))
+                                   font=(self.secondary_font, 12))
         self.host_entry.pack(side=tk.LEFT, padx=(0, 15), ipady=2)
         self.host_entry.insert(0, "127.0.0.1")
 
         # Port input
         tk.Label(conn_frame, text="PORT>", bg=self.colors['bg'],
-                 fg=self.colors['text'], font=('Courier', 10, 'bold')).pack(side=tk.LEFT, padx=(0, 5))
+                 fg=self.colors['text'], font=(self.secondary_font, 12, 'bold')).pack(side=tk.LEFT, padx=(0, 5))
         self.port_entry = tk.Entry(conn_frame, width=8,
                                    bg=self.colors['secondary'],
                                    fg=self.colors['text'],
@@ -99,7 +105,7 @@ class ChatView:
                                    highlightthickness=1,
                                    highlightbackground=self.colors['accent'],
                                    highlightcolor=self.colors['highlight'],
-                                   font=('Courier', 10))
+                                   font=(self.secondary_font, 12))
         self.port_entry.pack(side=tk.LEFT, padx=(0, 15), ipady=2)
         self.port_entry.insert(0, "65432")
 
@@ -110,7 +116,7 @@ class ChatView:
                                     activebackground="#1f541f",
                                     fg=self.colors['highlight'],
                                     activeforeground=self.colors['success'],
-                                    font=('Courier', 10, 'bold'),
+                                    font=(self.primary_font, 12, 'bold'),
                                     relief=tk.FLAT,
                                     cursor="hand2",
                                     command=self.toggle_connection)
@@ -127,7 +133,7 @@ class ChatView:
             bg=self.colors['secondary'],
             fg=self.colors['text'],
             insertbackground=self.colors['text'],
-            font=('Courier', 11),
+            font=(self.secondary_font, 14),
             padx=15,
             pady=15,
             relief=tk.FLAT,
@@ -136,11 +142,11 @@ class ChatView:
         self.chat_display.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
 
         # Configure tags for styling
-        self.chat_display.tag_configure("timestamp", foreground=self.colors['muted'], font=('Courier', 9))
-        self.chat_display.tag_configure("received", foreground=self.colors['received'], font=('Courier', 11, 'bold'))
-        self.chat_display.tag_configure("sent", foreground=self.colors['sent'], font=('Courier', 11, 'bold'))
-        self.chat_display.tag_configure("system", foreground=self.colors['success'], font=('Courier', 10, 'italic'))
-        self.chat_display.tag_configure("error", foreground=self.colors['danger'], font=('Courier', 10, 'bold'))
+        self.chat_display.tag_configure("timestamp", foreground=self.colors['muted'], font=(self.secondary_font, 11))
+        self.chat_display.tag_configure("received", foreground=self.colors['received'], font=(self.secondary_font, 14, 'bold'))
+        self.chat_display.tag_configure("sent", foreground=self.colors['sent'], font=(self.secondary_font, 14, 'bold'))
+        self.chat_display.tag_configure("system", foreground=self.colors['success'], font=(self.secondary_font, 13, 'italic'))
+        self.chat_display.tag_configure("error", foreground=self.colors['danger'], font=(self.secondary_font, 13, 'bold'))
 
         # Input area
         input_frame = tk.Frame(main_frame, bg=self.colors['bg'])
@@ -154,7 +160,7 @@ class ChatView:
                                       highlightthickness=1,
                                       highlightbackground=self.colors['accent'],
                                       highlightcolor=self.colors['highlight'],
-                                      font=('Courier', 11),
+                                      font=(self.secondary_font, 14),
                                       state=tk.DISABLED)
         self.message_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), ipady=8)
 
@@ -163,7 +169,7 @@ class ChatView:
                                   activebackground="#1f541f",
                                   fg=self.colors['highlight'],
                                   activeforeground=self.colors['success'],
-                                  font=('Courier', 10, 'bold'),
+                                  font=(self.primary_font, 12, 'bold'),
                                   relief=tk.FLAT,
                                   cursor="hand2",
                                   state=tk.DISABLED,
@@ -196,22 +202,60 @@ class ChatView:
         self.chat_display.config(state=tk.NORMAL)
 
         if msg_type == "received":
-            self.chat_display.insert(tk.END, f"[{timestamp}] ", "timestamp")
-            self.chat_display.insert(tk.END, "<< RX ", "received")
-            self.chat_display.insert(tk.END, f"{text}\n", "received")
+            prefix = f"[{timestamp}] << RX "
+            body_tag = "received"
         elif msg_type == "sent":
-            self.chat_display.insert(tk.END, f"[{timestamp}] ", "timestamp")
-            self.chat_display.insert(tk.END, ">> TX ", "sent")
-            self.chat_display.insert(tk.END, f"{text}\n", "sent")
+            prefix = f"[{timestamp}] >> TX "
+            body_tag = "sent"
         elif msg_type == "error":
-            self.chat_display.insert(tk.END, f"[{timestamp}] !! ", "error")
-            self.chat_display.insert(tk.END, f"{text}\n", "error")
+            prefix = f"[{timestamp}] !! "
+            body_tag = "error"
         else:
-            self.chat_display.insert(tk.END, f"[{timestamp}] :: ", "system")
-            self.chat_display.insert(tk.END, f"{text}\n", "system")
+            prefix = f"[{timestamp}] :: "
+            body_tag = "system"
 
+        self.chat_display.insert(tk.END, prefix, body_tag)
         self.chat_display.see(tk.END)
         self.chat_display.config(state=tk.DISABLED)
+        self._typewriter_queue.append((f"{text}\n", body_tag))
+        if not self._typing_active:
+            self._process_typewriter_queue()
+
+    def _process_typewriter_queue(self):
+        if not self._typewriter_queue:
+            self._typing_active = False
+            return
+
+        self._typing_active = True
+        text, tag = self._typewriter_queue.popleft()
+        self._type_next_character(text, tag, 0)
+
+    def _type_next_character(self, text: str, tag: str, index: int):
+        if index >= len(text):
+            self._typing_active = False
+            self._process_typewriter_queue()
+            return
+
+        self.chat_display.config(state=tk.NORMAL)
+        self.chat_display.insert(tk.END, text[index], tag)
+        self.chat_display.see(tk.END)
+        self.chat_display.config(state=tk.DISABLED)
+
+        delay = 1 if text[index] == "\n" else self._typing_delay_ms
+        self.root.after(delay, lambda: self._type_next_character(text, tag, index + 1))
+
+    def _select_retro_fonts(self):
+        preferred_primary = ["Orbitron", "Audiowide", "Michroma", "BankGothic Md BT"]
+        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Consolas", "Courier New"]
+
+        try:
+            families = set(tkfont.families(self.root))
+        except tk.TclError:
+            return "Courier", "Courier"
+
+        primary = next((font for font in preferred_primary if font in families), "Courier")
+        secondary = next((font for font in preferred_secondary if font in families), primary)
+        return primary, secondary
 
     def process_queue(self):
         """Process message queue for thread-safe GUI updates"""

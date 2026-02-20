@@ -1,5 +1,6 @@
 # chat_app/gui/main_window.py
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import messagebox, simpledialog
 from .chat_view import ChatView
 from .history_viewer import HistoryViewer
@@ -14,15 +15,16 @@ class ModeSelector:
     def __init__(self, db_manager):
         self.db_manager = db_manager
         self.root = tk.Tk()
+        self.primary_font, self.secondary_font = self._select_retro_fonts()
         self.root.title("VAULT-TEC TERMINAL // MODE SELECT")
-        self.root.geometry("400x420")  # Taller for key input and toggle
+        self.root.geometry("520x560")
         self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
         
         # Center window
         self.root.update_idletasks()
-        x = (self.root.winfo_screenwidth() // 2) - 200
-        y = (self.root.winfo_screenheight() // 2) - 210
+        x = (self.root.winfo_screenwidth() // 2) - 260
+        y = (self.root.winfo_screenheight() // 2) - 280
         self.root.geometry(f"+{x}+{y}")
         self._title_glow_index = 0
         self._title_glow = ["#39d939", "#66ff66", "#98ff98", "#66ff66"]
@@ -39,12 +41,12 @@ class ModeSelector:
     def create_widgets(self):
         self.title_label = tk.Label(self.root, text="FALLOUT TERMINAL",
                                     bg="#050b05", fg="#25d225",
-                                    font=('Courier', 24, 'bold'))
+                                    font=(self.primary_font, 34, 'bold'))
         self.title_label.pack(pady=(20, 4))
 
         self.matrix_label = tk.Label(self.root, text="MATRIX-LINK ENCRYPTION ACTIVE",
                                      bg="#050b05", fg="#66ff66",
-                                     font=('Courier', 10))
+                                     font=(self.secondary_font, 14))
         self.matrix_label.pack(pady=(0, 10))
         
         # Encryption key input frame
@@ -53,7 +55,7 @@ class ModeSelector:
         
         tk.Label(key_frame, text="Encryption Key:", 
                 bg="#050b05", fg="#7CFF7C",
-                font=('Helvetica', 10)).pack(anchor=tk.W)
+                font=(self.secondary_font, 14)).pack(anchor=tk.W)
         
         # Entry and toggle button frame
         entry_frame = tk.Frame(key_frame, bg="#050b05")
@@ -62,7 +64,7 @@ class ModeSelector:
         self.key_entry = tk.Entry(entry_frame, show="•",
                                  bg="#081408", fg="#7CFF7C",
                                  insertbackground="#7CFF7C",
-                                 relief=tk.FLAT, font=('Helvetica', 10))
+                                 relief=tk.FLAT, font=(self.secondary_font, 13))
         self.key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.key_entry.insert(0, "my_secret_key_2024")
         
@@ -70,7 +72,7 @@ class ModeSelector:
         self.show_key = False
         self.toggle_btn = tk.Button(entry_frame, text="👁",
                                    bg="#081408", fg="#66ff66",
-                                   font=('Helvetica', 10),
+                                   font=(self.secondary_font, 12),
                                    relief=tk.FLAT,
                                    cursor="hand2",
                                    command=self.toggle_key_visibility,
@@ -80,42 +82,42 @@ class ModeSelector:
         # Key info label
         tk.Label(key_frame, text="Both sides must use the same key!",
                 bg="#050b05", fg="#2f7f2f",
-                font=('Helvetica', 8)).pack(anchor=tk.W)
+                font=(self.secondary_font, 10)).pack(anchor=tk.W)
         
         # Generate random key button
         tk.Button(key_frame, text="🎲 GENERATE KEY",
                  bg="#0f2d0f", fg="#7CFF7C",
-                 font=('Helvetica', 9),
+                 font=(self.primary_font, 12),
                  relief=tk.FLAT,
                  cursor="hand2",
                  command=self.generate_random_key).pack(anchor=tk.W, pady=(5, 0))
         
         tk.Label(self.root, text="CHOOSE TERMINAL MODE",
                 bg="#050b05", fg="#2f7f2f",
-                font=('Helvetica', 12)).pack(pady=(20, 10))
+                font=(self.primary_font, 17)).pack(pady=(24, 12))
         
         btn_frame = tk.Frame(self.root, bg="#050b05")
         btn_frame.pack(pady=10)
         
         self.server_btn = tk.Button(btn_frame, text="BOOT SERVER",
                                     bg="#25d225", fg="#050b05",
-                                    font=('Courier', 12, 'bold'),
+                                    font=(self.primary_font, 18, 'bold'),
                                     relief=tk.FLAT,
                                     activebackground="#66ff66",
                                     cursor="hand2",
-                                    width=20, height=2,
+                                    width=22, height=2,
                                     command=self.start_server)
-        self.server_btn.pack(pady=10)
+        self.server_btn.pack(pady=12)
 
         self.client_btn = tk.Button(btn_frame, text="BOOT CLIENT",
                                     bg="#0f2d0f", fg="#66ff66",
                                     activebackground="#1f541f",
-                                    font=('Courier', 12, 'bold'),
+                                    font=(self.primary_font, 18, 'bold'),
                                     relief=tk.FLAT,
                                     cursor="hand2",
-                                    width=20, height=2,
+                                    width=22, height=2,
                                     command=self.start_client)
-        self.client_btn.pack(pady=10)
+        self.client_btn.pack(pady=12)
 
         self.animate_terminal_intro()
 
@@ -129,6 +131,19 @@ class ModeSelector:
         self._matrix_idx = (self._matrix_idx + 1) % len(self._matrix_frames)
         self.matrix_label.config(text=f"MATRIX-LINK ENCRYPTION ACTIVE :: {self._matrix_frames[self._matrix_idx]}")
         self.root.after(320, self.animate_terminal_intro)
+
+    def _select_retro_fonts(self):
+        preferred_primary = ["Orbitron", "Audiowide", "Michroma", "BankGothic Md BT"]
+        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Consolas", "Courier New"]
+
+        try:
+            families = set(tkfont.families(self.root))
+        except tk.TclError:
+            return "Courier", "Courier"
+
+        primary = next((font for font in preferred_primary if font in families), "Courier")
+        secondary = next((font for font in preferred_secondary if font in families), primary)
+        return primary, secondary
         
     def toggle_key_visibility(self):
         """Toggle between showing and hiding the encryption key"""
