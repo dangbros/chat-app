@@ -14,18 +14,24 @@ class ModeSelector:
     def __init__(self, db_manager):
         self.db_manager = db_manager
         self.root = tk.Tk()
-        self.root.title("VAULT-TEC TERMINAL // MODE SELECT")
-        self.root.geometry("400x420")  # Taller for key input and toggle
+        self.root.title("VAULT-TEC DATALINK // MODE SELECT")
+        self.window_width = 520
+        self.window_height = 560
+        self.root.geometry(f"{self.window_width}x{self.window_height}")
         self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
+        self.retro_font = "OCR A Extended"
+        self.retro_fallback = "Courier"
         
         # Center window
         self.root.update_idletasks()
-        x = (self.root.winfo_screenwidth() // 2) - 200
-        y = (self.root.winfo_screenheight() // 2) - 210
-        self.root.geometry(f"+{x}+{y}")
+        x = (self.root.winfo_screenwidth() // 2) - (self.window_width // 2)
+        y = (self.root.winfo_screenheight() // 2) - (self.window_height // 2)
+        self.root.geometry(f"{self.window_width}x{self.window_height}+{x}+{y}")
         self._title_glow_index = 0
         self._title_glow = ["#39d939", "#66ff66", "#98ff98", "#66ff66"]
+        self._title_target = "WASTELAND DATALINK"
+        self._title_type_index = 0
         self._matrix_frames = [
             "01001010 11001010 00101101",
             "10101100 01001110 11010001",
@@ -37,23 +43,23 @@ class ModeSelector:
         self.create_widgets()
         
     def create_widgets(self):
-        self.title_label = tk.Label(self.root, text="FALLOUT TERMINAL",
+        self.title_label = tk.Label(self.root, text="",
                                     bg="#050b05", fg="#25d225",
-                                    font=('Courier', 24, 'bold'))
+                                    font=(self.retro_font, 30, 'bold'))
         self.title_label.pack(pady=(20, 4))
 
-        self.matrix_label = tk.Label(self.root, text="MATRIX-LINK ENCRYPTION ACTIVE",
+        self.matrix_label = tk.Label(self.root, text="📡 WASTELAND ENCRYPTION ACTIVE",
                                      bg="#050b05", fg="#66ff66",
-                                     font=('Courier', 10))
+                                     font=(self.retro_fallback, 12))
         self.matrix_label.pack(pady=(0, 10))
         
         # Encryption key input frame
         key_frame = tk.Frame(self.root, bg="#050b05")
         key_frame.pack(pady=10, padx=20, fill=tk.X)
         
-        tk.Label(key_frame, text="Encryption Key:", 
+        tk.Label(key_frame, text="🔐 Encryption Key:", 
                 bg="#050b05", fg="#7CFF7C",
-                font=('Helvetica', 10)).pack(anchor=tk.W)
+                font=(self.retro_fallback, 12, 'bold')).pack(anchor=tk.W)
         
         # Entry and toggle button frame
         entry_frame = tk.Frame(key_frame, bg="#050b05")
@@ -62,7 +68,7 @@ class ModeSelector:
         self.key_entry = tk.Entry(entry_frame, show="•",
                                  bg="#081408", fg="#7CFF7C",
                                  insertbackground="#7CFF7C",
-                                 relief=tk.FLAT, font=('Helvetica', 10))
+                                 relief=tk.FLAT, font=(self.retro_fallback, 12))
         self.key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.key_entry.insert(0, "my_secret_key_2024")
         
@@ -80,26 +86,26 @@ class ModeSelector:
         # Key info label
         tk.Label(key_frame, text="Both sides must use the same key!",
                 bg="#050b05", fg="#2f7f2f",
-                font=('Helvetica', 8)).pack(anchor=tk.W)
+                font=(self.retro_fallback, 10)).pack(anchor=tk.W)
         
         # Generate random key button
         tk.Button(key_frame, text="🎲 GENERATE KEY",
                  bg="#0f2d0f", fg="#7CFF7C",
-                 font=('Helvetica', 9),
+                 font=(self.retro_fallback, 11, 'bold'),
                  relief=tk.FLAT,
                  cursor="hand2",
                  command=self.generate_random_key).pack(anchor=tk.W, pady=(5, 0))
         
-        tk.Label(self.root, text="CHOOSE TERMINAL MODE",
+        tk.Label(self.root, text="CHOOSE DATALINK MODE",
                 bg="#050b05", fg="#2f7f2f",
-                font=('Helvetica', 12)).pack(pady=(20, 10))
+                font=(self.retro_fallback, 14, 'bold')).pack(pady=(20, 10))
         
         btn_frame = tk.Frame(self.root, bg="#050b05")
         btn_frame.pack(pady=10)
         
-        self.server_btn = tk.Button(btn_frame, text="BOOT SERVER",
+        self.server_btn = tk.Button(btn_frame, text="🛰 BOOT RELAY SERVER",
                                     bg="#25d225", fg="#050b05",
-                                    font=('Courier', 12, 'bold'),
+                                    font=(self.retro_font, 14, 'bold'),
                                     relief=tk.FLAT,
                                     activebackground="#66ff66",
                                     cursor="hand2",
@@ -107,17 +113,29 @@ class ModeSelector:
                                     command=self.start_server)
         self.server_btn.pack(pady=10)
 
-        self.client_btn = tk.Button(btn_frame, text="BOOT CLIENT",
+        self.client_btn = tk.Button(btn_frame, text="📻 BOOT RELAY CLIENT",
                                     bg="#0f2d0f", fg="#66ff66",
                                     activebackground="#1f541f",
-                                    font=('Courier', 12, 'bold'),
+                                    font=(self.retro_font, 14, 'bold'),
                                     relief=tk.FLAT,
                                     cursor="hand2",
                                     width=20, height=2,
                                     command=self.start_client)
         self.client_btn.pack(pady=10)
 
+        self.typewrite_title()
         self.animate_terminal_intro()
+
+    def typewrite_title(self):
+        """Typewriter effect for startup title text."""
+        if self._title_type_index < len(self._title_target):
+            self._title_type_index += 1
+            preview = self._title_target[:self._title_type_index]
+            cursor = "_" if self._title_type_index < len(self._title_target) else ""
+            self.title_label.config(text=f"{preview}{cursor}")
+            self.root.after(60, self.typewrite_title)
+        else:
+            self.title_label.config(text=self._title_target)
 
     def animate_terminal_intro(self):
         """Animate the mode selector with subtle retro effects."""
@@ -127,7 +145,7 @@ class ModeSelector:
         self.server_btn.config(bg=glow)
 
         self._matrix_idx = (self._matrix_idx + 1) % len(self._matrix_frames)
-        self.matrix_label.config(text=f"MATRIX-LINK ENCRYPTION ACTIVE :: {self._matrix_frames[self._matrix_idx]}")
+        self.matrix_label.config(text=f"📡 WASTELAND ENCRYPTION ACTIVE :: {self._matrix_frames[self._matrix_idx]}")
         self.root.after(320, self.animate_terminal_intro)
         
     def toggle_key_visibility(self):
