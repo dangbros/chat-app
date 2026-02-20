@@ -56,10 +56,12 @@ class ChatClient:
                 try:
                     decrypted = self.cipher.decrypt(data)
                     self.logger.output(f"[ENCRYPTED] {data[:50]}... -> {decrypted}", "received", "Server")
-                except Exception as e:
+                    self.on_receive(decrypted)
+                except Exception:
                     # Fallback: treat as plain text
                     decrypted = data.decode('utf-8')
                     self.logger.output(f"[PLAIN] {decrypted}", "received", "Server")
+                    self.on_receive(decrypted)
                     
         except Exception as e:
             if self.running:

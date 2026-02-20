@@ -1,7 +1,7 @@
 # chat_app/network/server.py
 import socket
 import threading
-from typing import Optional, Callable
+from typing import Optional
 from ..utils.crypto import XorCipher, get_cipher
 
 class ChatServer:
@@ -78,10 +78,12 @@ class ChatServer:
                 try:
                     decrypted = self.cipher.decrypt(data)
                     self.logger.output(f"[ENCRYPTED] {data[:50]}... -> {decrypted}", "received", f"Client({addr[0]})")
-                except Exception as e:
+                    self.on_receive(decrypted)
+                except Exception:
                     # Fallback: treat as plain text for backward compatibility
                     decrypted = data.decode('utf-8')
                     self.logger.output(f"[PLAIN] {decrypted}", "received", f"Client({addr[0]})")
+                    self.on_receive(decrypted)
                     
         except Exception as e:
             if self.running:
