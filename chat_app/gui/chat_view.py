@@ -40,10 +40,10 @@ class ChatView:
         self.root.configure(bg=self.colors['bg'])
         title_mode = "SERVER NODE" if self.is_server else "CLIENT NODE"
         self.root.title(f"VAULT-TEC DATALINK // {title_mode}")
-        self.root.geometry("1080x720")
-        self.root.minsize(980, 660)
-        self.root.option_add("*Font", f"{{{self.retro_fallback}}} 12")
-        self.root.option_add("*Font", f"{self.retro_fallback} 12")
+        self.root.geometry("1240x840")
+        self.root.minsize(1120, 760)
+        self.root.option_add("*Font", f"{{{self.retro_fallback}}} 13")
+        self.root.option_add("*Font", f"{self.retro_fallback} 13")
 
         self.create_widgets()
         self.process_queue()
@@ -53,12 +53,12 @@ class ChatView:
     def create_widgets(self):
         # Main container
         main_frame = tk.Frame(self.root, bg=self.colors['bg'])
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=26, pady=24)
 
         # Header
-        self.header = tk.Frame(main_frame, bg=self.colors['secondary'], height=60, highlightthickness=1,
+        self.header = tk.Frame(main_frame, bg=self.colors['secondary'], height=72, highlightthickness=1,
                                highlightbackground=self.colors['highlight'])
-        self.header.pack(fill=tk.X, pady=(0, 15))
+        self.header.pack(fill=tk.X, pady=(0, 20))
         self.header.pack_propagate(False)
 
         title_text = "[ 🛰 SERVER TERMINAL ]" if self.is_server else "[ 📻 CLIENT TERMINAL ]"
@@ -67,26 +67,26 @@ class ChatView:
             text=title_text,
             bg=self.colors['secondary'],
             fg=self.colors['highlight'],
-            font=(self.retro_font, 16, 'bold')
+            font=(self.retro_font, 20, 'bold')
         )
-        self.title_label.pack(side=tk.LEFT, padx=20, pady=10)
+        self.title_label.pack(side=tk.LEFT, padx=24, pady=12)
 
         self.status_label = tk.Label(
             self.header,
             text="◉ OFFLINE",
             bg=self.colors['secondary'],
             fg=self.colors['muted'],
-            font=(self.retro_fallback, 12, 'bold')
+            font=(self.retro_fallback, 14, 'bold')
         )
-        self.status_label.pack(side=tk.RIGHT, padx=20, pady=10)
+        self.status_label.pack(side=tk.RIGHT, padx=24, pady=12)
 
         # Connection frame
         conn_frame = tk.Frame(main_frame, bg=self.colors['bg'])
-        conn_frame.pack(fill=tk.X, pady=(0, 15))
+        conn_frame.pack(fill=tk.X, pady=(0, 18))
 
         # Host input
         tk.Label(conn_frame, text="🌐 HOST>", bg=self.colors['bg'],
-                 fg=self.colors['text'], font=(self.retro_fallback, 12, 'bold')).pack(side=tk.LEFT, padx=(0, 5))
+                 fg=self.colors['text'], font=(self.retro_fallback, 14, 'bold')).pack(side=tk.LEFT, padx=(0, 8))
         self.host_entry = tk.Entry(conn_frame, width=15,
                                    bg=self.colors['secondary'],
                                    fg=self.colors['text'],
@@ -95,13 +95,13 @@ class ChatView:
                                    highlightthickness=1,
                                    highlightbackground=self.colors['accent'],
                                    highlightcolor=self.colors['highlight'],
-                                   font=(self.retro_fallback, 12))
-        self.host_entry.pack(side=tk.LEFT, padx=(0, 15), ipady=2)
+                                   font=(self.retro_fallback, 14))
+        self.host_entry.pack(side=tk.LEFT, padx=(0, 18), ipady=4)
         self.host_entry.insert(0, "127.0.0.1")
 
         # Port input
         tk.Label(conn_frame, text="⚙ PORT>", bg=self.colors['bg'],
-                 fg=self.colors['text'], font=(self.retro_fallback, 12, 'bold')).pack(side=tk.LEFT, padx=(0, 5))
+                 fg=self.colors['text'], font=(self.retro_fallback, 14, 'bold')).pack(side=tk.LEFT, padx=(0, 8))
         self.port_entry = tk.Entry(conn_frame, width=8,
                                    bg=self.colors['secondary'],
                                    fg=self.colors['text'],
@@ -110,8 +110,8 @@ class ChatView:
                                    highlightthickness=1,
                                    highlightbackground=self.colors['accent'],
                                    highlightcolor=self.colors['highlight'],
-                                   font=(self.retro_fallback, 12))
-        self.port_entry.pack(side=tk.LEFT, padx=(0, 15), ipady=2)
+                                   font=(self.retro_fallback, 14))
+        self.port_entry.pack(side=tk.LEFT, padx=(0, 18), ipady=4)
         self.port_entry.insert(0, "65432")
 
         # Action button
@@ -121,16 +121,16 @@ class ChatView:
                                     activebackground="#1f541f",
                                     fg=self.colors['highlight'],
                                     activeforeground=self.colors['success'],
-                                    font=(self.retro_font, 12, 'bold'),
+                                    font=(self.retro_font, 14, 'bold'),
                                     relief=tk.FLAT,
                                     cursor="hand2",
                                     command=self.toggle_connection)
-        self.action_btn.pack(side=tk.LEFT, padx=10, ipady=2, ipadx=6)
+        self.action_btn.pack(side=tk.LEFT, padx=12, ipady=4, ipadx=10)
 
         # Chat display
         chat_container = tk.Frame(main_frame, bg=self.colors['secondary'], bd=1, relief=tk.FLAT,
                                   highlightthickness=1, highlightbackground=self.colors['accent'])
-        chat_container.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+        chat_container.pack(fill=tk.BOTH, expand=True, pady=(0, 18))
 
         self.chat_display = scrolledtext.ScrolledText(
             chat_container,
@@ -138,20 +138,20 @@ class ChatView:
             bg=self.colors['secondary'],
             fg=self.colors['text'],
             insertbackground=self.colors['text'],
-            font=(self.retro_fallback, 13),
-            padx=15,
-            pady=15,
+            font=(self.retro_fallback, 14),
+            padx=18,
+            pady=18,
             relief=tk.FLAT,
             state=tk.DISABLED
         )
         self.chat_display.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
 
         # Configure tags for styling
-        self.chat_display.tag_configure("timestamp", foreground=self.colors['muted'], font=(self.retro_fallback, 10))
-        self.chat_display.tag_configure("received", foreground=self.colors['received'], font=(self.retro_fallback, 13, 'bold'))
-        self.chat_display.tag_configure("sent", foreground=self.colors['sent'], font=(self.retro_fallback, 13, 'bold'))
-        self.chat_display.tag_configure("system", foreground=self.colors['success'], font=(self.retro_fallback, 12, 'italic'))
-        self.chat_display.tag_configure("error", foreground=self.colors['danger'], font=(self.retro_fallback, 12, 'bold'))
+        self.chat_display.tag_configure("timestamp", foreground=self.colors['muted'], font=(self.retro_fallback, 11))
+        self.chat_display.tag_configure("received", foreground=self.colors['received'], font=(self.retro_fallback, 14, 'bold'))
+        self.chat_display.tag_configure("sent", foreground=self.colors['sent'], font=(self.retro_fallback, 14, 'bold'))
+        self.chat_display.tag_configure("system", foreground=self.colors['success'], font=(self.retro_fallback, 13, 'italic'))
+        self.chat_display.tag_configure("error", foreground=self.colors['danger'], font=(self.retro_fallback, 13, 'bold'))
 
         # Input area
         input_frame = tk.Frame(main_frame, bg=self.colors['bg'])
@@ -165,21 +165,21 @@ class ChatView:
                                       highlightthickness=1,
                                       highlightbackground=self.colors['accent'],
                                       highlightcolor=self.colors['highlight'],
-                                      font=(self.retro_fallback, 13),
+                                      font=(self.retro_fallback, 14),
                                       state=tk.DISABLED)
-        self.message_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), ipady=8)
+        self.message_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 12), ipady=10)
 
         self.send_btn = tk.Button(input_frame, text="📨 TRANSMIT >>",
                                   bg=self.colors['accent'],
                                   activebackground="#1f541f",
                                   fg=self.colors['highlight'],
                                   activeforeground=self.colors['success'],
-                                  font=(self.retro_font, 12, 'bold'),
+                                  font=(self.retro_font, 14, 'bold'),
                                   relief=tk.FLAT,
                                   cursor="hand2",
                                   state=tk.DISABLED,
                                   command=self.send_message)
-        self.send_btn.pack(side=tk.RIGHT, ipadx=20, ipady=5)
+        self.send_btn.pack(side=tk.RIGHT, ipadx=24, ipady=7)
 
     def animate_status(self):
         """Blink status indicator for retro terminal feel."""

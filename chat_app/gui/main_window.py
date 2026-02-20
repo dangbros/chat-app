@@ -16,8 +16,8 @@ class ModeSelector:
         self.db_manager = db_manager
         self.root = tk.Tk()
         self.root.title("VAULT-TEC DATALINK // MODE SELECT")
-        self.window_width = 520
-        self.window_height = 560
+        self.window_width = 640
+        self.window_height = 720
         self.root.geometry(f"{self.window_width}x{self.window_height}")
         self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
@@ -52,83 +52,83 @@ class ModeSelector:
     def create_widgets(self):
         self.title_label = tk.Label(self.root, text="",
                                     bg="#050b05", fg="#25d225",
-                                    font=(self.retro_font, 30, 'bold'))
-        self.title_label.pack(pady=(20, 4))
+                                    font=(self.retro_font, 36, 'bold'))
+        self.title_label.pack(pady=(26, 6))
 
         self.matrix_label = tk.Label(self.root, text="📡 WASTELAND ENCRYPTION ACTIVE",
                                      bg="#050b05", fg="#66ff66",
-                                     font=(self.retro_fallback, 12))
-        self.matrix_label.pack(pady=(0, 10))
+                                     font=(self.retro_fallback, 14))
+        self.matrix_label.pack(pady=(0, 14))
         
         # Encryption key input frame
         key_frame = tk.Frame(self.root, bg="#050b05")
-        key_frame.pack(pady=10, padx=20, fill=tk.X)
+        key_frame.pack(pady=12, padx=24, fill=tk.X)
         
         tk.Label(key_frame, text="🔐 Encryption Key:", 
                 bg="#050b05", fg="#7CFF7C",
-                font=(self.retro_fallback, 12, 'bold')).pack(anchor=tk.W)
+                font=(self.retro_fallback, 15, 'bold')).pack(anchor=tk.W)
         
         # Entry and toggle button frame
         entry_frame = tk.Frame(key_frame, bg="#050b05")
-        entry_frame.pack(fill=tk.X, pady=5)
+        entry_frame.pack(fill=tk.X, pady=7)
         
         self.key_entry = tk.Entry(entry_frame, show="•",
                                  bg="#081408", fg="#7CFF7C",
                                  insertbackground="#7CFF7C",
-                                 relief=tk.FLAT, font=(self.retro_fallback, 12))
-        self.key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+                                 relief=tk.FLAT, font=(self.retro_fallback, 14))
+        self.key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=4)
         self.key_entry.insert(0, "my_secret_key_2024")
         
         # Show/Hide toggle button
         self.show_key = False
         self.toggle_btn = tk.Button(entry_frame, text="👁",
                                    bg="#081408", fg="#66ff66",
-                                   font=('Helvetica', 10),
+                                   font=('Helvetica', 12),
                                    relief=tk.FLAT,
                                    cursor="hand2",
                                    command=self.toggle_key_visibility,
-                                   width=3)
-        self.toggle_btn.pack(side=tk.RIGHT, padx=(5, 0))
+                                   width=4)
+        self.toggle_btn.pack(side=tk.RIGHT, padx=(8, 0), ipady=2)
         
         # Key info label
         tk.Label(key_frame, text="Both sides must use the same key!",
                 bg="#050b05", fg="#2f7f2f",
-                font=(self.retro_fallback, 10)).pack(anchor=tk.W)
+                font=(self.retro_fallback, 11)).pack(anchor=tk.W, pady=(2, 0))
         
         # Generate random key button
         tk.Button(key_frame, text="🎲 GENERATE KEY",
                  bg="#0f2d0f", fg="#7CFF7C",
-                 font=(self.retro_fallback, 11, 'bold'),
+                 font=(self.retro_fallback, 13, 'bold'),
                  relief=tk.FLAT,
                  cursor="hand2",
-                 command=self.generate_random_key).pack(anchor=tk.W, pady=(5, 0))
+                 command=self.generate_random_key).pack(anchor=tk.W, pady=(8, 0), ipadx=8, ipady=2)
         
         tk.Label(self.root, text="CHOOSE DATALINK MODE",
                 bg="#050b05", fg="#2f7f2f",
-                font=(self.retro_fallback, 14, 'bold')).pack(pady=(20, 10))
+                font=(self.retro_fallback, 18, 'bold')).pack(pady=(26, 12))
         
         btn_frame = tk.Frame(self.root, bg="#050b05")
-        btn_frame.pack(pady=10)
+        btn_frame.pack(pady=12)
         
         self.server_btn = tk.Button(btn_frame, text="🛰 BOOT RELAY SERVER",
                                     bg="#25d225", fg="#050b05",
-                                    font=(self.retro_font, 14, 'bold'),
+                                    font=(self.retro_font, 16, 'bold'),
                                     relief=tk.FLAT,
                                     activebackground="#66ff66",
                                     cursor="hand2",
-                                    width=20, height=2,
+                                    width=22, height=2,
                                     command=self.start_server)
-        self.server_btn.pack(pady=10)
+        self.server_btn.pack(pady=12, ipadx=6, ipady=4)
 
         self.client_btn = tk.Button(btn_frame, text="📻 BOOT RELAY CLIENT",
                                     bg="#0f2d0f", fg="#66ff66",
                                     activebackground="#1f541f",
-                                    font=(self.retro_font, 14, 'bold'),
+                                    font=(self.retro_font, 16, 'bold'),
                                     relief=tk.FLAT,
                                     cursor="hand2",
-                                    width=20, height=2,
+                                    width=22, height=2,
                                     command=self.start_client)
-        self.client_btn.pack(pady=10)
+        self.client_btn.pack(pady=12, ipadx=6, ipady=4)
 
         self.typewrite_title()
         self.animate_terminal_intro()
