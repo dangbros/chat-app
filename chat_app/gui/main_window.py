@@ -1,5 +1,6 @@
 # chat_app/gui/main_window.py
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import messagebox, simpledialog
 from .chat_view import ChatView
 from .history_viewer import HistoryViewer
@@ -20,6 +21,9 @@ class ModeSelector:
         self.root.geometry(f"{self.window_width}x{self.window_height}")
         self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
+        available_fonts = set(tkfont.families(self.root))
+        self.retro_font = "OCR A Extended" if "OCR A Extended" in available_fonts else "Consolas"
+        self.retro_fallback = "Courier New" if "Courier New" in available_fonts else "Courier"
         self.retro_font = "OCR A Extended"
         self.retro_fallback = "Courier"
         
@@ -39,7 +43,10 @@ class ModeSelector:
             "11000101 00011110 10110011",
         ]
         self._matrix_idx = 0
-        
+        self._intro_after_id = None
+        self._type_after_id = None
+        self._hide_key_after_id = None
+
         self.create_widgets()
         
     def create_widgets(self):
@@ -128,17 +135,22 @@ class ModeSelector:
 
     def typewrite_title(self):
         """Typewriter effect for startup title text."""
+        if not self.root.winfo_exists():
+            return
         if self._title_type_index < len(self._title_target):
             self._title_type_index += 1
             preview = self._title_target[:self._title_type_index]
             cursor = "_" if self._title_type_index < len(self._title_target) else ""
             self.title_label.config(text=f"{preview}{cursor}")
+            self._type_after_id = self.root.after(60, self.typewrite_title)
             self.root.after(60, self.typewrite_title)
         else:
             self.title_label.config(text=self._title_target)
 
     def animate_terminal_intro(self):
         """Animate the mode selector with subtle retro effects."""
+        if not self.root.winfo_exists():
+            return
         self._title_glow_index = (self._title_glow_index + 1) % len(self._title_glow)
         glow = self._title_glow[self._title_glow_index]
         self.title_label.config(fg=glow)
@@ -146,6 +158,10 @@ class ModeSelector:
 
         self._matrix_idx = (self._matrix_idx + 1) % len(self._matrix_frames)
         self.matrix_label.config(text=f"📡 WASTELAND ENCRYPTION ACTIVE :: {self._matrix_frames[self._matrix_idx]}")
+        try:
+            self._intro_after_id = self.root.after(320, self.animate_terminal_intro)
+        except tk.TclError:
+            return
         self.root.after(320, self.animate_terminal_intro)
         
     def toggle_key_visibility(self):
@@ -170,13 +186,22 @@ class ModeSelector:
         self.key_entry.config(show="")
         self.show_key = True
         self.toggle_btn.config(text="🙈", fg="#25d225")
-        self.root.after(2000, self.hide_key_temporarily)
+        self._hide_key_after_id = self.root.after(2000, self.hide_key_temporarily)
         
     def hide_key_temporarily(self):
         """Auto-hide key after showing generated key"""
         if self.show_key:
             self.toggle_key_visibility()
         
+    def cleanup_timers(self):
+        """Cancel queued timer callbacks before switching windows."""
+        for after_id in (self._intro_after_id, self._type_after_id, self._hide_key_after_id):
+            if after_id:
+                try:
+                    self.root.after_cancel(after_id)
+                except tk.TclError:
+                    pass
+
     def get_key(self):
         """Get encryption key from input"""
         key = self.key_entry.get().strip()
@@ -192,6 +217,7 @@ class ModeSelector:
         print("="*50)
         print("STARTING SERVER MODE")
         print("="*50 + "\n")
+        self.cleanup_timers()
         self.root.destroy()
         root = tk.Tk()
         app = ServerGUI(root, self.db_manager)
@@ -205,6 +231,7 @@ class ModeSelector:
         print("="*50)
         print("STARTING CLIENT MODE")
         print("="*50 + "\n")
+        self.cleanup_timers()
         self.root.destroy()
         root = tk.Tk()
         app = ClientGUI(root, self.db_manager)

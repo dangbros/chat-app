@@ -1,5 +1,6 @@
 # chat_app/gui/chat_view.py
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import scrolledtext
 import queue
 import time
@@ -12,6 +13,9 @@ class ChatView:
         self.root = root
         self.is_server = is_server
         self.message_queue = queue.Queue()
+        available_fonts = set(tkfont.families(root))
+        self.retro_font = "OCR A Extended" if "OCR A Extended" in available_fonts else "Consolas"
+        self.retro_fallback = "Courier New" if "Courier New" in available_fonts else "Courier"
         self.retro_font = "OCR A Extended"
         self.retro_fallback = "Courier New"
         self._status_anim_state = False
@@ -38,6 +42,7 @@ class ChatView:
         self.root.title(f"VAULT-TEC DATALINK // {title_mode}")
         self.root.geometry("1080x720")
         self.root.minsize(980, 660)
+        self.root.option_add("*Font", f"{{{self.retro_fallback}}} 12")
         self.root.option_add("*Font", f"{self.retro_fallback} 12")
 
         self.create_widgets()
