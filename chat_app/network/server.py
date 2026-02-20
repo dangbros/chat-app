@@ -77,11 +77,12 @@ class ChatServer:
                 # Decrypt received data
                 try:
                     decrypted = self.cipher.decrypt(data)
-                    self.logger.output(f"[ENCRYPTED] {data[:50]}... -> {decrypted}", "received", f"Client({addr[0]})")
-                except Exception as e:
+                except Exception:
                     # Fallback: treat as plain text for backward compatibility
                     decrypted = data.decode('utf-8')
-                    self.logger.output(f"[PLAIN] {decrypted}", "received", f"Client({addr[0]})")
+
+                # Show only chat content in the UI (no encrypted/base64 payload)
+                self.logger.output(decrypted, "received", f"Client({addr[0]})")
                     
         except Exception as e:
             if self.running:
@@ -98,7 +99,7 @@ class ChatServer:
                 # Encrypt message
                 encrypted = self.cipher.encrypt(message)
                 self.client_conn.sendall(encrypted)
-                self.logger.output(f"[ENCRYPTED] {message} -> {encrypted[:50]}...", "sent", "You")
+                self.logger.output(message, "sent", "You")
                 return True
             except Exception as e:
                 self.logger.output(f"Send failed: {e}", "error", "System")
