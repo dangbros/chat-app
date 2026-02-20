@@ -22,23 +22,40 @@ class ChatView:
         self._typing_delay_ms = 16
         self.primary_font, self.secondary_font = self._select_retro_fonts()
 
-        # Fallout/Matrix retro terminal palette
-        self.colors = {
-            'bg': "#050b05",
-            'secondary': "#081408",
-            'accent': "#0f2d0f",
-            'highlight': "#25d225",
-            'text': "#7CFF7C",
-            'muted': "#2f7f2f",
-            'success': "#66ff66",
-            'received': "#98ff98",
-            'sent': "#39d939",
-            'warn': "#c4ff6f",
-            'danger': "#ff6b6b",
-        }
+        # Role-based retro-futuristic palettes
+        if self.is_server:
+            self.colors = {
+                'bg': "#050b05",
+                'secondary': "#081408",
+                'accent': "#0f2d0f",
+                'highlight': "#25d225",
+                'text': "#7CFF7C",
+                'muted': "#2f7f2f",
+                'success': "#66ff66",
+                'received': "#98ff98",
+                'sent': "#39d939",
+                'warn': "#c4ff6f",
+                'danger': "#ff6b6b",
+            }
+        else:
+            self.colors = {
+                'bg': "#151003",
+                'secondary': "#211704",
+                'accent': "#3a2a09",
+                'highlight': "#ffd54a",
+                'text': "#ffe082",
+                'muted': "#b18b29",
+                'success': "#ffeb99",
+                'received': "#fff2b3",
+                'sent': "#ffd54a",
+                'warn': "#ffe082",
+                'danger': "#ff8a65",
+            }
 
         self.root.configure(bg=self.colors['bg'])
         self.root.option_add("*Font", f"{self.secondary_font} 12")
+        self._icon_image = self._create_window_icon()
+        self.root.iconphoto(True, self._icon_image)
 
         self.create_widgets()
         self.process_queue()
@@ -56,7 +73,7 @@ class ChatView:
         self.header.pack(fill=tk.X, pady=(0, 15))
         self.header.pack_propagate(False)
 
-        title_text = "[ SERVER TERMINAL ]" if self.is_server else "[ CLIENT TERMINAL ]"
+        title_text = "[ 🛰 SERVER TERMINAL ]" if self.is_server else "[ 🕶 CLIENT TERMINAL ]"
         self.title_label = tk.Label(
             self.header,
             text=title_text,
@@ -110,7 +127,7 @@ class ChatView:
         self.port_entry.insert(0, "65432")
 
         # Action button
-        action_text = "BOOT SERVER" if self.is_server else "LINK"
+        action_text = "🛰 BOOT SERVER" if self.is_server else "⚡ LINK"
         self.action_btn = tk.Button(conn_frame, text=action_text,
                                     bg=self.colors['accent'],
                                     activebackground="#1f541f",
@@ -164,7 +181,7 @@ class ChatView:
                                       state=tk.DISABLED)
         self.message_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), ipady=8)
 
-        self.send_btn = tk.Button(input_frame, text="TRANSMIT >>",
+        self.send_btn = tk.Button(input_frame, text="🚀 TRANSMIT >>",
                                   bg=self.colors['accent'],
                                   activebackground="#1f541f",
                                   fg=self.colors['highlight'],
@@ -245,8 +262,8 @@ class ChatView:
         self.root.after(delay, lambda: self._type_next_character(text, tag, index + 1))
 
     def _select_retro_fonts(self):
-        preferred_primary = ["Orbitron", "Audiowide", "Michroma", "BankGothic Md BT"]
-        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Consolas", "Courier New"]
+        preferred_primary = ["Orbitron", "Audiowide", "Exo 2", "Rajdhani", "Michroma", "BankGothic Md BT"]
+        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Source Code Pro", "Consolas", "Courier New"]
 
         try:
             families = set(tkfont.families(self.root))
@@ -256,6 +273,34 @@ class ChatView:
         primary = next((font for font in preferred_primary if font in families), "Courier")
         secondary = next((font for font in preferred_secondary if font in families), primary)
         return primary, secondary
+
+
+    def _create_window_icon(self):
+        icon_data = [
+            "0000000000000000",
+            "0000001111000000",
+            "0000112222110000",
+            "0001222222221000",
+            "0012222332222100",
+            "0122233333222210",
+            "0122233333222210",
+            "0122223333222210",
+            "0122222332222210",
+            "0012222222222100",
+            "0001222222221000",
+            "0000112222110000",
+            "0000001111000000",
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000",
+        ]
+        bg = self.colors['bg']
+        palette = {"0": bg, "1": "#6d4f00", "2": "#ffcc33", "3": "#fff28a"}
+        icon = tk.PhotoImage(width=16, height=16)
+        for y, row in enumerate(icon_data):
+            for x, pixel in enumerate(row):
+                icon.put(palette[pixel], (x, y))
+        return icon
 
     def process_queue(self):
         """Process message queue for thread-safe GUI updates"""
@@ -280,7 +325,7 @@ class ChatView:
     def update_ui_state(self, connected: bool, is_server: bool = False):
         """Update UI based on connection state"""
         if connected:
-            self.action_btn.config(text="SHUTDOWN" if is_server else "UNLINK", bg="#1f541f")
+            self.action_btn.config(text="SHUTDOWN" if is_server else "🔌 UNLINK", bg="#1f541f")
             self.host_entry.config(state=tk.DISABLED)
             self.port_entry.config(state=tk.DISABLED)
             if is_server:
@@ -290,7 +335,7 @@ class ChatView:
             self.message_entry.config(state=tk.NORMAL)
             self.send_btn.config(state=tk.NORMAL)
         else:
-            self.action_btn.config(text="BOOT SERVER" if is_server else "LINK", bg=self.colors['accent'])
+            self.action_btn.config(text="🛰 BOOT SERVER" if is_server else "⚡ LINK", bg=self.colors['accent'])
             self.host_entry.config(state=tk.NORMAL)
             self.port_entry.config(state=tk.NORMAL)
             self.status_label.config(text="● OFFLINE", fg=self.colors['muted'])
