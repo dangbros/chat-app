@@ -16,15 +16,17 @@ class ModeSelector:
         self.db_manager = db_manager
         self.root = tk.Tk()
         self.primary_font, self.secondary_font = self._select_retro_fonts()
-        self.root.title("VAULT-TEC TERMINAL // MODE SELECT")
-        self.root.geometry("520x560")
+        self.root.title("NEON NEXUS // MODE SELECT")
+        self.root.geometry("620x660")
         self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
+        self._icon_image = self._create_window_icon()
+        self.root.iconphoto(True, self._icon_image)
         
         # Center window
         self.root.update_idletasks()
-        x = (self.root.winfo_screenwidth() // 2) - 260
-        y = (self.root.winfo_screenheight() // 2) - 280
+        x = (self.root.winfo_screenwidth() // 2) - 310
+        y = (self.root.winfo_screenheight() // 2) - 330
         self.root.geometry(f"+{x}+{y}")
         self._title_glow_index = 0
         self._title_glow = ["#39d939", "#66ff66", "#98ff98", "#66ff66"]
@@ -39,7 +41,7 @@ class ModeSelector:
         self.create_widgets()
         
     def create_widgets(self):
-        self.title_label = tk.Label(self.root, text="FALLOUT TERMINAL",
+        self.title_label = tk.Label(self.root, text="🌌 NEON NEXUS",
                                     bg="#050b05", fg="#25d225",
                                     font=(self.primary_font, 34, 'bold'))
         self.title_label.pack(pady=(20, 4))
@@ -92,14 +94,14 @@ class ModeSelector:
                  cursor="hand2",
                  command=self.generate_random_key).pack(anchor=tk.W, pady=(5, 0))
         
-        tk.Label(self.root, text="CHOOSE TERMINAL MODE",
+        tk.Label(self.root, text="CHOOSE YOUR NEON NODE",
                 bg="#050b05", fg="#2f7f2f",
                 font=(self.primary_font, 17)).pack(pady=(24, 12))
         
         btn_frame = tk.Frame(self.root, bg="#050b05")
         btn_frame.pack(pady=10)
         
-        self.server_btn = tk.Button(btn_frame, text="BOOT SERVER",
+        self.server_btn = tk.Button(btn_frame, text="🛰 BOOT SERVER",
                                     bg="#25d225", fg="#050b05",
                                     font=(self.primary_font, 18, 'bold'),
                                     relief=tk.FLAT,
@@ -109,7 +111,7 @@ class ModeSelector:
                                     command=self.start_server)
         self.server_btn.pack(pady=12)
 
-        self.client_btn = tk.Button(btn_frame, text="BOOT CLIENT",
+        self.client_btn = tk.Button(btn_frame, text="🕶 BOOT CLIENT",
                                     bg="#0f2d0f", fg="#66ff66",
                                     activebackground="#1f541f",
                                     font=(self.primary_font, 18, 'bold'),
@@ -133,8 +135,8 @@ class ModeSelector:
         self.root.after(320, self.animate_terminal_intro)
 
     def _select_retro_fonts(self):
-        preferred_primary = ["Orbitron", "Audiowide", "Michroma", "BankGothic Md BT"]
-        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Consolas", "Courier New"]
+        preferred_primary = ["Orbitron", "Audiowide", "Exo 2", "Rajdhani", "Michroma", "BankGothic Md BT"]
+        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Source Code Pro", "Consolas", "Courier New"]
 
         try:
             families = set(tkfont.families(self.root))
@@ -144,6 +146,33 @@ class ModeSelector:
         primary = next((font for font in preferred_primary if font in families), "Courier")
         secondary = next((font for font in preferred_secondary if font in families), primary)
         return primary, secondary
+
+    def _create_window_icon(self):
+        """Create a compact retro-futuristic app icon."""
+        icon_data = [
+            "0000000000000000",
+            "0000001111000000",
+            "0000112222110000",
+            "0001222222221000",
+            "0012222332222100",
+            "0122233333222210",
+            "0122233333222210",
+            "0122223333222210",
+            "0122222332222210",
+            "0012222222222100",
+            "0001222222221000",
+            "0000112222110000",
+            "0000001111000000",
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000",
+        ]
+        palette = {"0": "#050b05", "1": "#6d4f00", "2": "#ffcc33", "3": "#fff28a"}
+        icon = tk.PhotoImage(width=16, height=16)
+        for y, row in enumerate(icon_data):
+            for x, pixel in enumerate(row):
+                icon.put(palette[pixel], (x, y))
+        return icon
         
     def toggle_key_visibility(self):
         """Toggle between showing and hiding the encryption key"""
@@ -191,6 +220,7 @@ class ModeSelector:
         print("="*50 + "\n")
         self.root.destroy()
         root = tk.Tk()
+        root.title("NEON NEXUS // SERVER")
         app = ServerGUI(root, self.db_manager)
         root.mainloop()
         
@@ -204,6 +234,7 @@ class ModeSelector:
         print("="*50 + "\n")
         self.root.destroy()
         root = tk.Tk()
+        root.title("NEON NEXUS // CLIENT")
         app = ClientGUI(root, self.db_manager)
         root.mainloop()
         
