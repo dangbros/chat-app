@@ -143,7 +143,6 @@ class ModeSelector:
             cursor = "_" if self._title_type_index < len(self._title_target) else ""
             self.title_label.config(text=f"{preview}{cursor}")
             self._type_after_id = self.root.after(60, self.typewrite_title)
-            self.root.after(60, self.typewrite_title)
         else:
             self.title_label.config(text=self._title_target)
 
@@ -162,7 +161,6 @@ class ModeSelector:
             self._intro_after_id = self.root.after(320, self.animate_terminal_intro)
         except tk.TclError:
             return
-        self.root.after(320, self.animate_terminal_intro)
         
     def toggle_key_visibility(self):
         """Toggle between showing and hiding the encryption key"""
