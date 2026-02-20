@@ -185,15 +185,15 @@ class HistoryViewer:
         else:
             for msg in messages:
                 timestamp, sender, message, msg_type = msg
-                time_str = timestamp[11:19] if timestamp else "???"
+                time_str = timestamp[11:16] if timestamp else "???"
 
                 self.chat_display.insert(tk.END, f"[{time_str}] ", "timestamp")
 
                 if msg_type == "received":
-                    self.chat_display.insert(tk.END, f"<< RX {sender}: ", "received")
+                    self.chat_display.insert(tk.END, f"<< {sender}: ", "received")
                     self.chat_display.insert(tk.END, f"{message}\n", "received")
                 elif msg_type == "sent":
-                    self.chat_display.insert(tk.END, f">> TX {sender}: ", "sent")
+                    self.chat_display.insert(tk.END, f">> {sender}: ", "sent")
                     self.chat_display.insert(tk.END, f"{message}\n", "sent")
                 else:
                     self.chat_display.insert(tk.END, f":: {message}\n", "system")
@@ -218,7 +218,8 @@ class HistoryViewer:
             self.chat_display.insert(tk.END, f"Found {len(results)} messages:\n\n", "system")
             for msg in results:
                 timestamp, sender, message, msg_type, sess_type = msg
-                self.chat_display.insert(tk.END, f"[{timestamp}] ({sess_type}) {sender}: ", "system")
+                timestamp_str = timestamp[:16] if timestamp else "???"
+                self.chat_display.insert(tk.END, f"[{timestamp_str}] ({sess_type}) {sender}: ", "system")
                 self.chat_display.insert(tk.END, f"{message}\n", msg_type if msg_type in ["received", "sent"] else "system")
 
         self.chat_display.config(state=tk.DISABLED)
