@@ -53,6 +53,9 @@ class ChatView:
             }
 
         self.root.configure(bg=self.colors['bg'])
+        self.root.geometry("1280x840")
+        self.root.minsize(1080, 720)
+        self.root.tk.call("tk", "scaling", 1.15)
         self.root.option_add("*Font", f"{self.secondary_font} 12")
         self._icon_image = self._create_window_icon()
         self.root.iconphoto(True, self._icon_image)
@@ -73,7 +76,7 @@ class ChatView:
         self.header.pack(fill=tk.X, pady=(0, 15))
         self.header.pack_propagate(False)
 
-        title_text = "[ 🛰 SERVER TERMINAL ]" if self.is_server else "[ 🕶 CLIENT TERMINAL ]"
+        title_text = f"[ \uf233 SERVER TERMINAL ]" if self.is_server else f"[ \uf109 CLIENT TERMINAL ]"
         self.title_label = tk.Label(
             self.header,
             text=title_text,
@@ -127,7 +130,7 @@ class ChatView:
         self.port_entry.insert(0, "65432")
 
         # Action button
-        action_text = "🛰 BOOT SERVER" if self.is_server else "⚡ LINK"
+        action_text = f"\uf233 BOOT SERVER" if self.is_server else f"\uf0c1 LINK"
         self.action_btn = tk.Button(conn_frame, text=action_text,
                                     bg=self.colors['accent'],
                                     activebackground="#1f541f",
@@ -181,7 +184,7 @@ class ChatView:
                                       state=tk.DISABLED)
         self.message_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), ipady=8)
 
-        self.send_btn = tk.Button(input_frame, text="🚀 TRANSMIT >>",
+        self.send_btn = tk.Button(input_frame, text="\uf1d8 TRANSMIT >>",
                                   bg=self.colors['accent'],
                                   activebackground="#1f541f",
                                   fg=self.colors['highlight'],
@@ -260,8 +263,30 @@ class ChatView:
         self.root.after(delay, lambda: self._type_next_character(text, tag, index + 1))
 
     def _select_retro_fonts(self):
-        preferred_primary = ["Orbitron", "Audiowide", "Exo 2", "Rajdhani", "Michroma", "BankGothic Md BT"]
-        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Source Code Pro", "Consolas", "Courier New"]
+        preferred_primary = [
+            "JetBrainsMono Nerd Font",
+            "Hack Nerd Font",
+            "FiraCode Nerd Font",
+            "CaskaydiaCove Nerd Font",
+            "Orbitron",
+            "Audiowide",
+            "Exo 2",
+            "Rajdhani",
+            "Michroma",
+            "BankGothic Md BT",
+        ]
+        preferred_secondary = [
+            "JetBrainsMono Nerd Font Mono",
+            "Symbols Nerd Font Mono",
+            "Hack Nerd Font Mono",
+            "FiraCode Nerd Font Mono",
+            "CaskaydiaCove Nerd Font Mono",
+            "Share Tech Mono",
+            "JetBrains Mono",
+            "Source Code Pro",
+            "Consolas",
+            "Courier New",
+        ]
 
         try:
             families = set(tkfont.families(self.root))
@@ -323,7 +348,7 @@ class ChatView:
     def update_ui_state(self, connected: bool, is_server: bool = False):
         """Update UI based on connection state"""
         if connected:
-            self.action_btn.config(text="SHUTDOWN" if is_server else "🔌 UNLINK", bg="#1f541f")
+            self.action_btn.config(text="SHUTDOWN" if is_server else "\uf1e6 UNLINK", bg="#1f541f")
             self.host_entry.config(state=tk.DISABLED)
             self.port_entry.config(state=tk.DISABLED)
             if is_server:
@@ -333,7 +358,7 @@ class ChatView:
             self.message_entry.config(state=tk.NORMAL)
             self.send_btn.config(state=tk.NORMAL)
         else:
-            self.action_btn.config(text="🛰 BOOT SERVER" if is_server else "⚡ LINK", bg=self.colors['accent'])
+            self.action_btn.config(text=f"\uf233 BOOT SERVER" if is_server else "\uf0c1 LINK", bg=self.colors['accent'])
             self.host_entry.config(state=tk.NORMAL)
             self.port_entry.config(state=tk.NORMAL)
             self.status_label.config(text="● OFFLINE", fg=self.colors['muted'])

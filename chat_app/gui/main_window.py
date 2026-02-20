@@ -17,7 +17,9 @@ class ModeSelector:
         self.root = tk.Tk()
         self.primary_font, self.secondary_font = self._select_retro_fonts()
         self.root.title("NEON NEXUS // MODE SELECT")
-        self.root.geometry("620x660")
+        self.root.geometry("860x860")
+        self.root.minsize(820, 820)
+        self.root.tk.call("tk", "scaling", 1.15)
         self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
         self._icon_image = self._create_window_icon()
@@ -25,8 +27,8 @@ class ModeSelector:
         
         # Center window
         self.root.update_idletasks()
-        x = (self.root.winfo_screenwidth() // 2) - 310
-        y = (self.root.winfo_screenheight() // 2) - 330
+        x = (self.root.winfo_screenwidth() // 2) - 430
+        y = (self.root.winfo_screenheight() // 2) - 430
         self.root.geometry(f"+{x}+{y}")
         self._title_glow_index = 0
         self._title_glow = ["#39d939", "#66ff66", "#98ff98", "#66ff66"]
@@ -41,7 +43,7 @@ class ModeSelector:
         self.create_widgets()
         
     def create_widgets(self):
-        self.title_label = tk.Label(self.root, text="🌌 NEON NEXUS",
+        self.title_label = tk.Label(self.root, text="\uf0ac NEON NEXUS",
                                     bg="#050b05", fg="#25d225",
                                     font=(self.primary_font, 34, 'bold'))
         self.title_label.pack(pady=(20, 4))
@@ -72,7 +74,7 @@ class ModeSelector:
         
         # Show/Hide toggle button
         self.show_key = False
-        self.toggle_btn = tk.Button(entry_frame, text="👁",
+        self.toggle_btn = tk.Button(entry_frame, text="\uf06e",
                                    bg="#081408", fg="#66ff66",
                                    font=(self.secondary_font, 12),
                                    relief=tk.FLAT,
@@ -87,7 +89,7 @@ class ModeSelector:
                 font=(self.secondary_font, 10)).pack(anchor=tk.W)
         
         # Generate random key button
-        tk.Button(key_frame, text="🎲 GENERATE KEY",
+        tk.Button(key_frame, text="\uf074 GENERATE KEY",
                  bg="#0f2d0f", fg="#7CFF7C",
                  font=(self.primary_font, 12),
                  relief=tk.FLAT,
@@ -101,7 +103,7 @@ class ModeSelector:
         btn_frame = tk.Frame(self.root, bg="#050b05")
         btn_frame.pack(pady=10)
         
-        self.server_btn = tk.Button(btn_frame, text="🛰 BOOT SERVER",
+        self.server_btn = tk.Button(btn_frame, text="\uf233 BOOT SERVER",
                                     bg="#25d225", fg="#050b05",
                                     font=(self.primary_font, 18, 'bold'),
                                     relief=tk.FLAT,
@@ -111,7 +113,7 @@ class ModeSelector:
                                     command=self.start_server)
         self.server_btn.pack(pady=12)
 
-        self.client_btn = tk.Button(btn_frame, text="🕶 BOOT CLIENT",
+        self.client_btn = tk.Button(btn_frame, text="\uf109 BOOT CLIENT",
                                     bg="#0f2d0f", fg="#66ff66",
                                     activebackground="#1f541f",
                                     font=(self.primary_font, 18, 'bold'),
@@ -135,8 +137,30 @@ class ModeSelector:
         self.root.after(320, self.animate_terminal_intro)
 
     def _select_retro_fonts(self):
-        preferred_primary = ["Orbitron", "Audiowide", "Exo 2", "Rajdhani", "Michroma", "BankGothic Md BT"]
-        preferred_secondary = ["Share Tech Mono", "JetBrains Mono", "Source Code Pro", "Consolas", "Courier New"]
+        preferred_primary = [
+            "JetBrainsMono Nerd Font",
+            "Hack Nerd Font",
+            "FiraCode Nerd Font",
+            "CaskaydiaCove Nerd Font",
+            "Orbitron",
+            "Audiowide",
+            "Exo 2",
+            "Rajdhani",
+            "Michroma",
+            "BankGothic Md BT",
+        ]
+        preferred_secondary = [
+            "JetBrainsMono Nerd Font Mono",
+            "Symbols Nerd Font Mono",
+            "Hack Nerd Font Mono",
+            "FiraCode Nerd Font Mono",
+            "CaskaydiaCove Nerd Font Mono",
+            "Share Tech Mono",
+            "JetBrains Mono",
+            "Source Code Pro",
+            "Consolas",
+            "Courier New",
+        ]
 
         try:
             families = set(tkfont.families(self.root))
@@ -179,10 +203,10 @@ class ModeSelector:
         self.show_key = not self.show_key
         if self.show_key:
             self.key_entry.config(show="")
-            self.toggle_btn.config(text="🙈", fg="#25d225")
+            self.toggle_btn.config(text="\uf070", fg="#25d225")
         else:
             self.key_entry.config(show="•")
-            self.toggle_btn.config(text="👁", fg="#66ff66")
+            self.toggle_btn.config(text="\uf06e", fg="#66ff66")
             
     def generate_random_key(self):
         """Generate a random encryption key"""
@@ -195,7 +219,7 @@ class ModeSelector:
         # Show the key temporarily
         self.key_entry.config(show="")
         self.show_key = True
-        self.toggle_btn.config(text="🙈", fg="#25d225")
+        self.toggle_btn.config(text="\uf070", fg="#25d225")
         self.root.after(2000, self.hide_key_temporarily)
         
     def hide_key_temporarily(self):
@@ -268,14 +292,14 @@ class ServerGUI(ChatView):
                         btn_frame = tk.Frame(child, bg=self.colors['bg'])
                         btn_frame.pack(side=tk.RIGHT, padx=5)
                         
-                        tk.Button(btn_frame, text="🔐 Key",
+                        tk.Button(btn_frame, text="\uf084 Key",
                                  bg="#c4ff6f", fg="#050b05",
                                  font=('Helvetica', 9, 'bold'),
                                  relief=tk.FLAT,
                                  cursor="hand2",
                                  command=self.change_key).pack(side=tk.LEFT, padx=2)
                         
-                        tk.Button(btn_frame, text="📜 History",
+                        tk.Button(btn_frame, text="\uf1da History",
                                  bg=self.colors['accent'],
                                  fg=self.colors['text'],
                                  font=('Helvetica', 9),
@@ -313,12 +337,12 @@ class ServerGUI(ChatView):
         def toggle_show():
             if key_entry.cget('show') == "•":
                 key_entry.config(show="")
-                toggle_btn.config(text="🙈", fg="#25d225")
+                toggle_btn.config(text="\uf070", fg="#25d225")
             else:
                 key_entry.config(show="•")
-                toggle_btn.config(text="👁", fg="#66ff66")
+                toggle_btn.config(text="\uf06e", fg="#66ff66")
         
-        toggle_btn = tk.Button(entry_frame, text="👁", 
+        toggle_btn = tk.Button(entry_frame, text="\uf06e", 
                               bg="#081408", fg="#66ff66",
                               relief=tk.FLAT, cursor="hand2",
                               command=toggle_show, width=3)
@@ -428,14 +452,14 @@ class ClientGUI(ChatView):
                         btn_frame = tk.Frame(child, bg=self.colors['bg'])
                         btn_frame.pack(side=tk.RIGHT, padx=5)
                         
-                        tk.Button(btn_frame, text="🔐 Key",
+                        tk.Button(btn_frame, text="\uf084 Key",
                                  bg="#c4ff6f", fg="#050b05",
                                  font=('Helvetica', 9, 'bold'),
                                  relief=tk.FLAT,
                                  cursor="hand2",
                                  command=self.change_key).pack(side=tk.LEFT, padx=2)
                         
-                        tk.Button(btn_frame, text="📜 History",
+                        tk.Button(btn_frame, text="\uf1da History",
                                  bg=self.colors['accent'],
                                  fg=self.colors['text'],
                                  font=('Helvetica', 9),
@@ -473,12 +497,12 @@ class ClientGUI(ChatView):
         def toggle_show():
             if key_entry.cget('show') == "•":
                 key_entry.config(show="")
-                toggle_btn.config(text="🙈", fg="#25d225")
+                toggle_btn.config(text="\uf070", fg="#25d225")
             else:
                 key_entry.config(show="•")
-                toggle_btn.config(text="👁", fg="#66ff66")
+                toggle_btn.config(text="\uf06e", fg="#66ff66")
         
-        toggle_btn = tk.Button(entry_frame, text="👁", 
+        toggle_btn = tk.Button(entry_frame, text="\uf06e", 
                               bg="#081408", fg="#66ff66",
                               relief=tk.FLAT, cursor="hand2",
                               command=toggle_show, width=3)

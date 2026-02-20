@@ -1,5 +1,6 @@
 # chat_app/gui/history_viewer.py
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import scrolledtext, messagebox, ttk
 
 
@@ -10,10 +11,13 @@ class HistoryViewer:
         self.db_manager = db_manager
         self.window = tk.Toplevel(parent)
         self.window.title("Archive Terminal")
-        self.window.geometry("800x600")
+        self.window.geometry("1180x760")
+        self.window.minsize(1040, 680)
+        self.window.tk.call("tk", "scaling", 1.1)
         self.window.configure(bg="#050b05")
         self._title_glow_index = 0
         self._title_glow = ["#39d939", "#66ff66", "#98ff98", "#66ff66"]
+        self.primary_font, self.secondary_font = self._select_retro_fonts()
 
         self.colors = {
             'bg': "#050b05",
@@ -51,7 +55,7 @@ class HistoryViewer:
         top_frame.pack(fill=tk.X, padx=10, pady=10)
 
         self.title_label = tk.Label(top_frame, text="ARCHIVE QUERY>", bg=self.colors['bg'],
-                                    fg=self.colors['highlight'], font=('Courier', 11, 'bold'))
+                                    fg=self.colors['highlight'], font=(self.primary_font, 12, 'bold'))
         self.title_label.pack(side=tk.LEFT, padx=(0, 8))
 
         self.search_entry = tk.Entry(top_frame, width=30,
@@ -59,7 +63,7 @@ class HistoryViewer:
                                      fg=self.colors['text'],
                                      insertbackground=self.colors['text'],
                                      relief=tk.FLAT,
-                                     font=('Courier', 10))
+                                     font=(self.secondary_font, 11))
         self.search_entry.pack(side=tk.LEFT, padx=(0, 10), ipady=2)
         self.search_entry.bind('<Return>', lambda e: self.search())
 
@@ -68,7 +72,7 @@ class HistoryViewer:
                   fg=self.colors['text'],
                   activebackground="#1f541f",
                   relief=tk.FLAT,
-                  font=('Courier', 10, 'bold'),
+                  font=(self.primary_font, 11, 'bold'),
                   command=self.search).pack(side=tk.LEFT, padx=5)
 
         tk.Button(top_frame, text="RELOAD",
@@ -76,7 +80,7 @@ class HistoryViewer:
                   fg=self.colors['bg'],
                   activebackground="#98ff98",
                   relief=tk.FLAT,
-                  font=('Courier', 10, 'bold'),
+                  font=(self.primary_font, 11, 'bold'),
                   command=self.load_sessions).pack(side=tk.LEFT, padx=5)
 
         tk.Button(top_frame, text="PURGE",
@@ -84,7 +88,7 @@ class HistoryViewer:
                   fg=self.colors['text'],
                   activebackground="#ff6b6b",
                   relief=tk.FLAT,
-                  font=('Courier', 10, 'bold'),
+                  font=(self.primary_font, 11, 'bold'),
                   command=self.delete_selected).pack(side=tk.RIGHT, padx=5)
 
         # Paned window for split view
@@ -97,7 +101,7 @@ class HistoryViewer:
 
         tk.Label(left_frame, text="SESSION LOGS",
                  bg=self.colors['bg'], fg=self.colors['text'],
-                 font=('Courier', 12, 'bold')).pack(pady=(0, 5))
+                 font=(self.primary_font, 13, 'bold')).pack(pady=(0, 5))
 
         # Treeview for sessions
         columns = ('ID', 'Type', 'Host:Port', 'Date')
@@ -125,7 +129,7 @@ class HistoryViewer:
 
         tk.Label(right_frame, text="MESSAGE DUMP",
                  bg=self.colors['bg'], fg=self.colors['text'],
-                 font=('Courier', 12, 'bold')).pack(pady=(0, 5))
+                 font=(self.primary_font, 13, 'bold')).pack(pady=(0, 5))
 
         self.chat_display = scrolledtext.ScrolledText(
             right_frame,
@@ -133,7 +137,7 @@ class HistoryViewer:
             bg=self.colors['secondary'],
             fg=self.colors['text'],
             insertbackground=self.colors['text'],
-            font=('Courier', 10),
+            font=(self.secondary_font, 11),
             padx=10,
             pady=10,
             relief=tk.FLAT,
@@ -148,6 +152,36 @@ class HistoryViewer:
                            ("system", self.colors['success']),
                            ("error", "#ff6b6b")]:
             self.chat_display.tag_configure(tag, foreground=color)
+
+    def _select_retro_fonts(self):
+        preferred_primary = [
+            "JetBrainsMono Nerd Font",
+            "Hack Nerd Font",
+            "FiraCode Nerd Font",
+            "CaskaydiaCove Nerd Font",
+            "Orbitron",
+            "Audiowide",
+            "Courier",
+        ]
+        preferred_secondary = [
+            "JetBrainsMono Nerd Font Mono",
+            "Symbols Nerd Font Mono",
+            "Hack Nerd Font Mono",
+            "FiraCode Nerd Font Mono",
+            "CaskaydiaCove Nerd Font Mono",
+            "Share Tech Mono",
+            "Consolas",
+            "Courier New",
+        ]
+
+        try:
+            families = set(tkfont.families(self.window))
+        except tk.TclError:
+            return "Courier", "Courier"
+
+        primary = next((font for font in preferred_primary if font in families), "Courier")
+        secondary = next((font for font in preferred_secondary if font in families), primary)
+        return primary, secondary
 
     def animate_header(self):
         self._title_glow_index = (self._title_glow_index + 1) % len(self._title_glow)
