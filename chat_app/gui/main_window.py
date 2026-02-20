@@ -14,9 +14,9 @@ class ModeSelector:
     def __init__(self, db_manager):
         self.db_manager = db_manager
         self.root = tk.Tk()
-        self.root.title("Socket Chat - Select Mode")
+        self.root.title("VAULT-TEC TERMINAL // MODE SELECT")
         self.root.geometry("400x420")  # Taller for key input and toggle
-        self.root.configure(bg="#1a1a2e")
+        self.root.configure(bg="#050b05")
         self.root.resizable(False, False)
         
         # Center window
@@ -24,33 +24,44 @@ class ModeSelector:
         x = (self.root.winfo_screenwidth() // 2) - 200
         y = (self.root.winfo_screenheight() // 2) - 210
         self.root.geometry(f"+{x}+{y}")
+        self._title_glow_index = 0
+        self._title_glow = ["#39d939", "#66ff66", "#98ff98", "#66ff66"]
+        self._matrix_frames = [
+            "01001010 11001010 00101101",
+            "10101100 01001110 11010001",
+            "00110011 11100001 01011010",
+            "11000101 00011110 10110011",
+        ]
+        self._matrix_idx = 0
         
         self.create_widgets()
         
     def create_widgets(self):
-        tk.Label(self.root, text="SOCKET CHAT", 
-                bg="#1a1a2e", fg="#e94560",
-                font=('Helvetica', 24, 'bold')).pack(pady=(20, 10))
-        
-        tk.Label(self.root, text="Secure XOR Encryption Enabled",
-                bg="#1a1a2e", fg="#00d9ff",
-                font=('Helvetica', 10)).pack(pady=(0, 10))
+        self.title_label = tk.Label(self.root, text="FALLOUT TERMINAL",
+                                    bg="#050b05", fg="#25d225",
+                                    font=('Courier', 24, 'bold'))
+        self.title_label.pack(pady=(20, 4))
+
+        self.matrix_label = tk.Label(self.root, text="MATRIX-LINK ENCRYPTION ACTIVE",
+                                     bg="#050b05", fg="#66ff66",
+                                     font=('Courier', 10))
+        self.matrix_label.pack(pady=(0, 10))
         
         # Encryption key input frame
-        key_frame = tk.Frame(self.root, bg="#1a1a2e")
+        key_frame = tk.Frame(self.root, bg="#050b05")
         key_frame.pack(pady=10, padx=20, fill=tk.X)
         
         tk.Label(key_frame, text="Encryption Key:", 
-                bg="#1a1a2e", fg="#eaeaea",
+                bg="#050b05", fg="#7CFF7C",
                 font=('Helvetica', 10)).pack(anchor=tk.W)
         
         # Entry and toggle button frame
-        entry_frame = tk.Frame(key_frame, bg="#1a1a2e")
+        entry_frame = tk.Frame(key_frame, bg="#050b05")
         entry_frame.pack(fill=tk.X, pady=5)
         
         self.key_entry = tk.Entry(entry_frame, show="•",
-                                 bg="#16213e", fg="#eaeaea",
-                                 insertbackground="#eaeaea",
+                                 bg="#081408", fg="#7CFF7C",
+                                 insertbackground="#7CFF7C",
                                  relief=tk.FLAT, font=('Helvetica', 10))
         self.key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.key_entry.insert(0, "my_secret_key_2024")
@@ -58,7 +69,7 @@ class ModeSelector:
         # Show/Hide toggle button
         self.show_key = False
         self.toggle_btn = tk.Button(entry_frame, text="👁",
-                                   bg="#16213e", fg="#00d9ff",
+                                   bg="#081408", fg="#66ff66",
                                    font=('Helvetica', 10),
                                    relief=tk.FLAT,
                                    cursor="hand2",
@@ -68,49 +79,66 @@ class ModeSelector:
         
         # Key info label
         tk.Label(key_frame, text="Both sides must use the same key!",
-                bg="#1a1a2e", fg="#a0a0a0",
+                bg="#050b05", fg="#2f7f2f",
                 font=('Helvetica', 8)).pack(anchor=tk.W)
         
         # Generate random key button
-        tk.Button(key_frame, text="🎲 Generate Random Key",
-                 bg="#0f3460", fg="#eaeaea",
+        tk.Button(key_frame, text="🎲 GENERATE KEY",
+                 bg="#0f2d0f", fg="#7CFF7C",
                  font=('Helvetica', 9),
                  relief=tk.FLAT,
                  cursor="hand2",
                  command=self.generate_random_key).pack(anchor=tk.W, pady=(5, 0))
         
-        tk.Label(self.root, text="Select your role",
-                bg="#1a1a2e", fg="#a0a0a0",
+        tk.Label(self.root, text="CHOOSE TERMINAL MODE",
+                bg="#050b05", fg="#2f7f2f",
                 font=('Helvetica', 12)).pack(pady=(20, 10))
         
-        btn_frame = tk.Frame(self.root, bg="#1a1a2e")
+        btn_frame = tk.Frame(self.root, bg="#050b05")
         btn_frame.pack(pady=10)
         
-        tk.Button(btn_frame, text="START SERVER",
-                 bg="#e94560", fg="white",
-                 font=('Helvetica', 12, 'bold'),
-                 relief=tk.FLAT,
-                 cursor="hand2",
-                 width=20, height=2,
-                 command=self.start_server).pack(pady=10)
-        
-        tk.Button(btn_frame, text="START CLIENT",
-                 bg="#00d9ff", fg="#1a1a2e",
-                 font=('Helvetica', 12, 'bold'),
-                 relief=tk.FLAT,
-                 cursor="hand2",
-                 width=20, height=2,
-                 command=self.start_client).pack(pady=10)
+        self.server_btn = tk.Button(btn_frame, text="BOOT SERVER",
+                                    bg="#25d225", fg="#050b05",
+                                    font=('Courier', 12, 'bold'),
+                                    relief=tk.FLAT,
+                                    activebackground="#66ff66",
+                                    cursor="hand2",
+                                    width=20, height=2,
+                                    command=self.start_server)
+        self.server_btn.pack(pady=10)
+
+        self.client_btn = tk.Button(btn_frame, text="BOOT CLIENT",
+                                    bg="#0f2d0f", fg="#66ff66",
+                                    activebackground="#1f541f",
+                                    font=('Courier', 12, 'bold'),
+                                    relief=tk.FLAT,
+                                    cursor="hand2",
+                                    width=20, height=2,
+                                    command=self.start_client)
+        self.client_btn.pack(pady=10)
+
+        self.animate_terminal_intro()
+
+    def animate_terminal_intro(self):
+        """Animate the mode selector with subtle retro effects."""
+        self._title_glow_index = (self._title_glow_index + 1) % len(self._title_glow)
+        glow = self._title_glow[self._title_glow_index]
+        self.title_label.config(fg=glow)
+        self.server_btn.config(bg=glow)
+
+        self._matrix_idx = (self._matrix_idx + 1) % len(self._matrix_frames)
+        self.matrix_label.config(text=f"MATRIX-LINK ENCRYPTION ACTIVE :: {self._matrix_frames[self._matrix_idx]}")
+        self.root.after(320, self.animate_terminal_intro)
         
     def toggle_key_visibility(self):
         """Toggle between showing and hiding the encryption key"""
         self.show_key = not self.show_key
         if self.show_key:
             self.key_entry.config(show="")
-            self.toggle_btn.config(text="🙈", fg="#e94560")
+            self.toggle_btn.config(text="🙈", fg="#25d225")
         else:
             self.key_entry.config(show="•")
-            self.toggle_btn.config(text="👁", fg="#00d9ff")
+            self.toggle_btn.config(text="👁", fg="#66ff66")
             
     def generate_random_key(self):
         """Generate a random encryption key"""
@@ -123,7 +151,7 @@ class ModeSelector:
         # Show the key temporarily
         self.key_entry.config(show="")
         self.show_key = True
-        self.toggle_btn.config(text="🙈", fg="#e94560")
+        self.toggle_btn.config(text="🙈", fg="#25d225")
         self.root.after(2000, self.hide_key_temporarily)
         
     def hide_key_temporarily(self):
@@ -195,7 +223,7 @@ class ServerGUI(ChatView):
                         btn_frame.pack(side=tk.RIGHT, padx=5)
                         
                         tk.Button(btn_frame, text="🔐 Key",
-                                 bg="#ffa502", fg="#1a1a2e",
+                                 bg="#c4ff6f", fg="#050b05",
                                  font=('Helvetica', 9, 'bold'),
                                  relief=tk.FLAT,
                                  cursor="hand2",
@@ -216,22 +244,22 @@ class ServerGUI(ChatView):
         dialog = tk.Toplevel(self.root)
         dialog.title("Change Encryption Key")
         dialog.geometry("300x150")
-        dialog.configure(bg="#1a1a2e")
+        dialog.configure(bg="#050b05")
         dialog.resizable(False, False)
         dialog.transient(self.root)
         dialog.grab_set()
         
         tk.Label(dialog, text="Enter new encryption key:", 
-                bg="#1a1a2e", fg="#eaeaea").pack(pady=10)
+                bg="#050b05", fg="#7CFF7C").pack(pady=10)
         
         # Entry frame with toggle
-        entry_frame = tk.Frame(dialog, bg="#1a1a2e")
+        entry_frame = tk.Frame(dialog, bg="#050b05")
         entry_frame.pack(pady=5, padx=20, fill=tk.X)
         
         key_var = tk.StringVar(value=self.cipher.key)
         key_entry = tk.Entry(entry_frame, textvariable=key_var, show="•",
-                            bg="#16213e", fg="#eaeaea",
-                            insertbackground="#eaeaea",
+                            bg="#081408", fg="#7CFF7C",
+                            insertbackground="#7CFF7C",
                             relief=tk.FLAT)
         key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         key_entry.select_range(0, tk.END)
@@ -239,13 +267,13 @@ class ServerGUI(ChatView):
         def toggle_show():
             if key_entry.cget('show') == "•":
                 key_entry.config(show="")
-                toggle_btn.config(text="🙈", fg="#e94560")
+                toggle_btn.config(text="🙈", fg="#25d225")
             else:
                 key_entry.config(show="•")
-                toggle_btn.config(text="👁", fg="#00d9ff")
+                toggle_btn.config(text="👁", fg="#66ff66")
         
         toggle_btn = tk.Button(entry_frame, text="👁", 
-                              bg="#16213e", fg="#00d9ff",
+                              bg="#081408", fg="#66ff66",
                               relief=tk.FLAT, cursor="hand2",
                               command=toggle_show, width=3)
         toggle_btn.pack(side=tk.RIGHT, padx=(5, 0))
@@ -259,7 +287,7 @@ class ServerGUI(ChatView):
                 self.logger.output(f"Encryption key changed", "system", "System")
                 dialog.destroy()
         
-        tk.Button(dialog, text="Apply", bg="#00d9ff", fg="#1a1a2e",
+        tk.Button(dialog, text="Apply", bg="#66ff66", fg="#050b05",
                  font=('Helvetica', 10, 'bold'),
                  relief=tk.FLAT, command=apply_key).pack(pady=15)
         
@@ -308,7 +336,7 @@ class ServerGUI(ChatView):
     def on_client_disconnect(self):
         """Callback when client disconnects"""
         self.root.after(0, lambda: self.status_label.config(
-            text="● Waiting", fg="#ffa502"))
+            text="● Waiting", fg="#c4ff6f"))
         self.root.after(0, lambda: self.message_entry.config(state=tk.DISABLED))
         self.root.after(0, lambda: self.send_btn.config(state=tk.DISABLED))
             
@@ -355,7 +383,7 @@ class ClientGUI(ChatView):
                         btn_frame.pack(side=tk.RIGHT, padx=5)
                         
                         tk.Button(btn_frame, text="🔐 Key",
-                                 bg="#ffa502", fg="#1a1a2e",
+                                 bg="#c4ff6f", fg="#050b05",
                                  font=('Helvetica', 9, 'bold'),
                                  relief=tk.FLAT,
                                  cursor="hand2",
@@ -376,22 +404,22 @@ class ClientGUI(ChatView):
         dialog = tk.Toplevel(self.root)
         dialog.title("Change Encryption Key")
         dialog.geometry("300x150")
-        dialog.configure(bg="#1a1a2e")
+        dialog.configure(bg="#050b05")
         dialog.resizable(False, False)
         dialog.transient(self.root)
         dialog.grab_set()
         
         tk.Label(dialog, text="Enter new encryption key:", 
-                bg="#1a1a2e", fg="#eaeaea").pack(pady=10)
+                bg="#050b05", fg="#7CFF7C").pack(pady=10)
         
         # Entry frame with toggle
-        entry_frame = tk.Frame(dialog, bg="#1a1a2e")
+        entry_frame = tk.Frame(dialog, bg="#050b05")
         entry_frame.pack(pady=5, padx=20, fill=tk.X)
         
         key_var = tk.StringVar(value=self.cipher.key)
         key_entry = tk.Entry(entry_frame, textvariable=key_var, show="•",
-                            bg="#16213e", fg="#eaeaea",
-                            insertbackground="#eaeaea",
+                            bg="#081408", fg="#7CFF7C",
+                            insertbackground="#7CFF7C",
                             relief=tk.FLAT)
         key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         key_entry.select_range(0, tk.END)
@@ -399,13 +427,13 @@ class ClientGUI(ChatView):
         def toggle_show():
             if key_entry.cget('show') == "•":
                 key_entry.config(show="")
-                toggle_btn.config(text="🙈", fg="#e94560")
+                toggle_btn.config(text="🙈", fg="#25d225")
             else:
                 key_entry.config(show="•")
-                toggle_btn.config(text="👁", fg="#00d9ff")
+                toggle_btn.config(text="👁", fg="#66ff66")
         
         toggle_btn = tk.Button(entry_frame, text="👁", 
-                              bg="#16213e", fg="#00d9ff",
+                              bg="#081408", fg="#66ff66",
                               relief=tk.FLAT, cursor="hand2",
                               command=toggle_show, width=3)
         toggle_btn.pack(side=tk.RIGHT, padx=(5, 0))
@@ -419,7 +447,7 @@ class ClientGUI(ChatView):
                 self.logger.output(f"Encryption key changed", "system", "System")
                 dialog.destroy()
         
-        tk.Button(dialog, text="Apply", bg="#00d9ff", fg="#1a1a2e",
+        tk.Button(dialog, text="Apply", bg="#66ff66", fg="#050b05",
                  font=('Helvetica', 10, 'bold'),
                  relief=tk.FLAT, command=apply_key).pack(pady=15)
         
