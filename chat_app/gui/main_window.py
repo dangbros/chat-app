@@ -24,6 +24,8 @@ class ModeSelector:
         available_fonts = set(tkfont.families(self.root))
         self.retro_font = "OCR A Extended" if "OCR A Extended" in available_fonts else "Consolas"
         self.retro_fallback = "Courier New" if "Courier New" in available_fonts else "Courier"
+        self.retro_font = "OCR A Extended"
+        self.retro_fallback = "Courier"
         
         # Center window
         self.root.update_idletasks()
@@ -141,6 +143,7 @@ class ModeSelector:
             cursor = "_" if self._title_type_index < len(self._title_target) else ""
             self.title_label.config(text=f"{preview}{cursor}")
             self._type_after_id = self.root.after(60, self.typewrite_title)
+            self.root.after(60, self.typewrite_title)
         else:
             self.title_label.config(text=self._title_target)
 
@@ -159,6 +162,7 @@ class ModeSelector:
             self._intro_after_id = self.root.after(320, self.animate_terminal_intro)
         except tk.TclError:
             return
+        self.root.after(320, self.animate_terminal_intro)
         
     def toggle_key_visibility(self):
         """Toggle between showing and hiding the encryption key"""

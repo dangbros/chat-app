@@ -16,6 +16,8 @@ class ChatView:
         available_fonts = set(tkfont.families(root))
         self.retro_font = "OCR A Extended" if "OCR A Extended" in available_fonts else "Consolas"
         self.retro_fallback = "Courier New" if "Courier New" in available_fonts else "Courier"
+        self.retro_font = "OCR A Extended"
+        self.retro_fallback = "Courier New"
         self._status_anim_state = False
         self._header_pulse_index = 0
         self._header_pulse_colors = ["#0d1f0d", "#113311", "#153f15", "#113311"]
@@ -41,6 +43,7 @@ class ChatView:
         self.root.geometry("1080x720")
         self.root.minsize(980, 660)
         self.root.option_add("*Font", f"{{{self.retro_fallback}}} 12")
+        self.root.option_add("*Font", f"{self.retro_fallback} 12")
 
         self.create_widgets()
         self.process_queue()
