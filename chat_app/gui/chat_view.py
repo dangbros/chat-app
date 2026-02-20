@@ -215,14 +215,14 @@ class ChatView:
 
     def add_message(self, text: str, msg_type: str = "system") -> None:
         """Add message to GUI display"""
-        timestamp = time.strftime("%H:%M:%S")
+        timestamp = time.strftime("%H:%M")
         self.chat_display.config(state=tk.NORMAL)
 
         if msg_type == "received":
-            prefix = f"[{timestamp}] << RX "
+            prefix = f"[{timestamp}] << "
             body_tag = "received"
         elif msg_type == "sent":
-            prefix = f"[{timestamp}] >> TX "
+            prefix = f"[{timestamp}] >> "
             body_tag = "sent"
         elif msg_type == "error":
             prefix = f"[{timestamp}] !! "
